@@ -47,7 +47,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async function handleLogin(userLogin: UsuarioLogin) {
 
         setIsLoading(true)
-
         try {
 
             await login(`/usuarios/logar`, userLogin, setUsuario)
