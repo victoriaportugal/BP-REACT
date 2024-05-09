@@ -50,12 +50,12 @@ const [isLoading, setIsLoading] = useState(false)
         setIsLoading(true)
         try {
             await login(`/usuarios/logar`, userLogin, setUsuario)
-            toastAlerta('Você precisa estar logado', 'info');
+            toastAlerta('Usuário logado com sucesso', 'sucesso');
             setIsLoading(false)
 
         } catch (error) {
             console.log(error)
-            toastAlerta('Você precisa estar logado', 'info');
+            toastAlerta('Erro ao fazer o login', 'erro');
             setIsLoading(false)
         }
     }
