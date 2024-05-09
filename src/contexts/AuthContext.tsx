@@ -2,6 +2,8 @@ import { createContext, ReactNode, useState } from "react"
 
 import UsuarioLogin from "../models/UsuarioLogin"
 import { login } from "../services/Service"
+import { toastAlerta } from "../utils/toastAlerta"
+
 
 //2ª PARTE : TIPANDO O CONTEXTO, DECLARANDO AS INFORMAÇÕES QUE O CONTEXTO ARMAZENA
 interface AuthContextProps {
@@ -31,7 +33,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
 //tambem disponibiliza para toda a aplicação as informações
 
 //CRIANDO UM ESTADO = useState (hook)
-    const [usuario, setUsuario] = useState<UsuarioLogin>({
+const [usuario, setUsuario] = useState<UsuarioLogin>({
+    id: 0,
+    nome: "",
+    usuario: "",
+    senha: "",
+    foto: "",
+    token: ""
+})
+
+const [isLoading, setIsLoading] = useState(false)
+
+
+    //RESPONSAVEL POR LOGAR O USUARIO E ATUALIZAR O ESTADO DE USUARIO LOGADO
+    async function handleLogin(userLogin: UsuarioLogin) {
+        setIsLoading(true)
+        try {
+            await login(`/usuarios/logar`, userLogin, setUsuario)
+            toastAlerta('Você precisa estar logado', 'info');
+            setIsLoading(false)
+
+        } catch (error) {
+            console.log(error)
+            toastAlerta('Você precisa estar logado', 'info');
+            setIsLoading(false)
+        }
+    }
+//RESPONSAVEL POR DESLOGAR O USUARIO REINICIANDO O ESTADO DE USUARIO LOGADO
+function handleLogout() {
+    setUsuario({
         id: 0,
         nome: "",
         usuario: "",
@@ -39,42 +69,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         foto: "",
         token: ""
     })
- 
-
-    const [isLoading, setIsLoading] = useState(false)
-
-    //RESPONSAVEL POR LOGAR O USUARIO E ATUALIZAR O ESTADO DE USUARIO LOGADO
-    async function handleLogin(userLogin: UsuarioLogin) {
-
-        setIsLoading(true)
-        try {
-
-            await login(`/usuarios/logar`, userLogin, setUsuario)
-            alert("Usuário logado com sucesso")
-            setIsLoading(false)
-
-        } catch (error) {
-            console.log(error)
-            alert("Dados do usuário inconsistentes")
-            setIsLoading(false)
-        }
-    }
-//RESPONSAVEL POR DESLOGAR O USUARIO REINICIANDO O ESTADO DE USUARIO LOGADO
-    function handleLogout() {
-        setUsuario({
-            id: 0,
-            nome: "",
-            usuario: "",
-            senha: "",
-            foto: "",
-            token: ""
-        })
-    }
-
-    return (
+}
+return (
         //COMPARTILHAMENTO DOS DADOS PARA O RESTO DA APLICAÇÃO
         <AuthContext.Provider value={{ usuario, handleLogin, handleLogout, isLoading }}>
-            {children}
-        </AuthContext.Provider>
-    )
+        {children}
+    </AuthContext.Provider>
+)
 }
